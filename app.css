@@ -1,11 +1,12 @@
 button {
     background: salmon;
     border: solid hotpink;
-    padding: 5px;
+    padding: 20px;
     margin-right: 5px;
     background-image: url("http://images.fandango.com/MDCsite/images/featured/201110/jurassic-park-blu-ray-shirtless-ian-malcom.jpg");
     background-size: contain;
     color: white;
+    
 }
 
 body {
@@ -19,4 +20,8 @@ body {
 
 * {
     color: white;
+}
+
+.vid {
+    pointer-events: none;
 }
