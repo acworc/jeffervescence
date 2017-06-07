@@ -2,6 +2,7 @@ const app = {
     init(selectors) {
         this.max = 0
         this.list = document.querySelector(selectors.listSelector)
+        this.storedFlicks = []
         document
             .querySelector(selectors.formSelector)
             .addEventListener('submit', this.addFlick.bind(this))
@@ -17,6 +18,7 @@ const app = {
         
         const listItem = this.renderListItem(flick)
         this.list.appendChild(listItem)
+        this.storedFlicks.push(flick)
         this.max++
     },
 
