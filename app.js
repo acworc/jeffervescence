@@ -101,3 +101,11 @@ app.init({
   listSelector: '#flickList',
   swapSelector: '#swapForm',
 })
+
+    $(function(){
+        var y = 0;
+        setInterval(function(){
+            y+=1;
+            $('body').css('background-position', y + 'px 0');
+        }, 10);
+    })
