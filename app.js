@@ -39,7 +39,7 @@ const app = {
 
     item
       .querySelector('button.remove')
-      .addEventListener('click', this.removeFlick)
+      .addEventListener('click', this.removeFlick.bind(this))
 
     return item
   },
@@ -47,6 +47,15 @@ const app = {
   removeFlick(ev) {
     const listItem = ev.target.closest('.flick')
     listItem.remove()
+
+    for (let i = 0; i < this.flicks.length; i++) {
+        const currentId = this.flicks[i].id.toString()
+        if (listItem.dataset.id === currentId) {
+            this.flicks.splice(i, 1)
+            break
+        }
+    }
+
   },
 }
 
