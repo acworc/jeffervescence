@@ -20,6 +20,7 @@ const app = {
     }
 
     this.flicks.unshift(flick)
+    this.save()
 
     const listItem = this.renderListItem(flick)
     this.list
@@ -27,6 +28,10 @@ const app = {
 
     ++ this.max
     f.reset()
+  },
+
+  save() {
+    localStorage.setItem('flicks', JSON.stringify(this.flicks))
   },
 
   renderListItem(flick) {
@@ -55,6 +60,11 @@ const app = {
             break
         }
     }
+
+
+
+    listItem.remove()
+    this.save()
 
   },
 }
