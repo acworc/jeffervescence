@@ -8,10 +8,12 @@ const app = {
       .querySelector(selectors.templateSelector)
     document
       .querySelector(selectors.formSelector)
-      .addEventListener('submit', this.addFlick.bind(this))
+      .addEventListener('submit', this.addFlickViaForm.bind(this))
+      
+      this.load()
   },
 
-  addFlick(ev) {
+  addFlickViaForm(ev) {
     ev.preventDefault()
     const f = ev.target
     const flick = {
@@ -32,6 +34,16 @@ const app = {
 
   save() {
     localStorage.setItem('flicks', JSON.stringify(this.flicks))
+  },
+
+  addFlick(flick) {
+    const listItem = this.renderListItem(flick)
+    this.list
+      .insertBefore(listItem, this.list.firstChild)
+    
+    ++ this.max
+    this.flicks.unshift(flick)
+    this.save()
   },
 
   renderListItem(flick) {
@@ -66,6 +78,19 @@ const app = {
     listItem.remove()
     this.save()
 
+  },
+
+  load() {
+      // Get the JSON string out of localStorage
+      const flicksJSON = localStorage.getItem('flicks')
+
+      // Turn that into an array
+      const flicksArray = JSON.parse(flicksJSON)
+
+      // Set this.flicks to that array
+      if (flicksArray){
+          flicksArray.reverse().map(this.addFlick.bind(this))
+      }
   },
 }
 
