@@ -9,8 +9,33 @@ const app = {
     document
       .querySelector(selectors.formSelector)
       .addEventListener('submit', this.addFlickViaForm.bind(this))
-      
-      this.load()
+
+    this.load()
+  },
+
+  load() {
+    // Get the JSON string out of localStorage
+    const flicksJSON = localStorage.getItem('flicks')
+
+    // Turn that into an array
+    const flicksArray = JSON.parse(flicksJSON)
+
+    // Set this.flicks to that array
+    if (flicksArray) {
+      flicksArray
+        .reverse()
+        .map(this.addFlick.bind(this))
+    }
+  },
+
+  addFlick(flick) {
+    const listItem = this.renderListItem(flick)
+    this.list
+      .insertBefore(listItem, this.list.firstChild)
+    
+    ++ this.max
+    this.flicks.unshift(flick)
+    this.save()
   },
 
   addFlickViaForm(ev) {
@@ -19,69 +44,19 @@ const app = {
     const flick = {
       id: this.max + 1,
       name: f.flickName.value,
+      fav: false,
     }
 
-    this.flicks.unshift(flick)
-    this.save()
+    this.addFlick(flick)
 
-    const listItem = this.renderListItem(flick)
-    this.list
-      .insertBefore(listItem, this.list.firstChild)
-
-    ++ this.max
     f.reset()
   },
 
   save() {
-    localStorage.setItem('flicks', JSON.stringify(this.flicks))
-    localStorage.setItem('max', this.max)
+    localStorage
+      .setItem('flicks', JSON.stringify(this.flicks))
+
   },
-
-  addFlick(flick) {
-    const listItem = this.renderListItem(flick)
-    this.list
-      .insertBefore(listItem, this.list.firstChild)
-    const decreaseButton = document.createElement('button')
-    decreaseButton.classList.add('button', 'success')
-    decreaseButton.innerText = 'Down'
-    listItem.appendChild(decreaseButton)
-    decreaseButton.addEventListener('click', this.decreaseFunc.bind(this))
-    
-    
-    ++ this.max
-    this.flicks.unshift(flick)
-    this.save()
-  },
-  moveUp(ev) {
-      const button = ev.target
-      const listItem = button.closest('li')
-      this.list.insertBefore(listItem, listItem.previousElementSibling)
-      this.save()
-  },
-
-  // moveDown(ev) {
-  //     const button = ev.target
-  //     const listItem = button.closest('li')
-  //     this.list.insertAfter(listItem, listItem.previousElementSibling)
-  // },
-
-
-  decreaseFunc(ev){
-    const keyA = ev.target.parentNode.parentNode
-    const keyB = keyA.dataset.key
-    const num = this.flicks.indexOf(keyB)
-
-    if(this.flicks[0] == keyA){
-        return;
-    }
-    //switching elements in the array
-    const temp = this.flicks[num - 1]
-    this.flicks[num] = temp
-    this.flicks[num - 1] = keyB
-
-    this.list.insertBefore(ev.target.parentNode, ev.target.parentNode.nextSibling.nextSibling)
-    this.save()
-},
 
   renderListItem(flick) {
     const item = this.template.cloneNode(true)
@@ -91,63 +66,67 @@ const app = {
       .querySelector('.flick-name')
       .textContent = flick.name
 
+    if (flick.fav) {
+      item.classList.add('fav')
+    }
+
     item
       .querySelector('button.remove')
       .addEventListener('click', this.removeFlick.bind(this))
-    item.querySelector('.moveUp').addEventListener('click', this.moveUp.bind(this))
-
-    // item.querySelector('.moveDown').addEventListener('click', this.decreaseFunc.bind(this))
-
+    item
+      .querySelector('button.fav')
+      .addEventListener('click', this.favFlick.bind(this, flick))
+    item
+      .querySelector('button.move-up')
+      .addEventListener('click', this.moveUp.bind(this, flick))
     return item
   },
 
   removeFlick(ev) {
     const listItem = ev.target.closest('.flick')
-    listItem.remove()
 
+    // Find the flick in the array, and remove it
     for (let i = 0; i < this.flicks.length; i++) {
-        const currentId = this.flicks[i].id.toString()
-        if (listItem.dataset.id === currentId) {
-            this.flicks.splice(i, 1)
-            break
-        }
+      const currentId = this.flicks[i].id.toString()
+      if (listItem.dataset.id === currentId) {
+        this.flicks.splice(i, 1)
+        break
+      }
     }
-
-
 
     listItem.remove()
     this.save()
-
   },
 
-  load() {
-      // Get the JSON string out of localStorage
-      const flicksJSON = localStorage.getItem('flicks')
-      const sysMax = localStorage.getItem('max')
-      this.max = sysMax
+  favFlick(flick, ev) {
+    const listItem = ev.target.closest('.flick')
+    flick.fav = !flick.fav
 
-      // Turn that into an array
-      const flicksArray = JSON.parse(flicksJSON)
-
-      // Set this.flicks to that array
-      if (flicksArray){
-          flicksArray.reverse().map(this.addFlick.bind(this))
-      }
+    if (flick.fav) {
+      listItem.classList.add('fav')
+    } else {
+      listItem.classList.remove('fav')
+    }
+    
+    this.save()
   },
 
+  moveUp(flick, ev) {
+    const listItem = ev.target.closest('.flick')
 
-    handleSwap(event) {
-        event.preventDefault()
-        const f = event.target
-        const indexOne = document.querySelector('#swapOne').value - 1
-        const indexTwo = document.querySelector('#swapTwo').value - 1
-        const temp = this.flicks[indexOne]
-        this.flicks[indexOne] = this.storedFlicks[indexTwo]
-        this.flicks[indexTwo] = temp
-        const sysFlicks = JSON.parse(localStorage.getItem('flicks'))
-        localStorage.setItem('flicks', JSON.stringify(this.flicks))
-        // this.reloadList()
-    },
+    const index = this.flicks.findIndex((currentFlick, i) => {
+      return currentFlick.id === flick.id
+    })
+
+    if (index > 0) {
+      this.list.insertBefore(listItem, listItem.previousElementSibling)
+
+      const previousFlick = this.flicks[index - 1]
+      this.flicks[index - 1] = flick
+      this.flicks[index] = previousFlick
+      this.save()
+    }
+  }
 }
 
 app.init({
