@@ -71,6 +71,10 @@ const app = {
     }
 
     item
+      .querySelector('.flick-name')
+      .addEventListener('keypress', this.saveOnEnter.bind(this, flick))
+
+    item
       .querySelector('button.remove')
       .addEventListener('click', this.removeFlick.bind(this))
     item
@@ -106,6 +110,7 @@ const app = {
   },
 
   favFlick(flick, ev) {
+    console.log(ev.currentTarget)
     const listItem = ev.target.closest('.flick')
     flick.fav = !flick.fav
 
@@ -147,29 +152,28 @@ const app = {
       
       const nextFlick = this.flicks[index + 1]
       this.flicks[index + 1] = flick
-      this.flicks[index] = nextFlick
+      this.flicks[index] =  nextFlick
       this.save()
     }
-
   },
 
   edit(flick, ev) {
-    const btn = ev.currentTarget
-    const listItem = btn.closest('.flick')
+    const listItem = ev.target.closest('.flick')
     const nameField = listItem.querySelector('.flick-name')
+    const btn = listItem.querySelector('.edit.button')
+
     const icon = btn.querySelector('i.fa')
 
     if (nameField.isContentEditable) {
-      nameField.contentEditable = false;
-
+      // make it no longer editable
+      nameField.contentEditable = false
       icon.classList.remove('fa-check')
       icon.classList.add('fa-pencil')
       btn.classList.remove('success')
 
+      // save changes
       flick.name = nameField.textContent
       this.save()
-
-
     } else {
       nameField.contentEditable = true
       nameField.focus()
@@ -177,7 +181,12 @@ const app = {
       icon.classList.add('fa-check')
       btn.classList.add('success')
     }
+  },
 
+  saveOnEnter(flick, ev) {
+    if (ev.key === 'Enter') {
+      this.edit(flick, ev)
+    }
   }
 }
 
