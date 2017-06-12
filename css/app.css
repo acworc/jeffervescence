@@ -1,3 +1,4 @@
+
 .flick.template {
   display: none;
 }
@@ -17,10 +18,27 @@
 
 .flick-name {
   flex-grow: 1;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: calc(100% - 200px);
+  margin-right: 1rem;
+}
+li { 
+  display: inline-block; 
+}
+
+li img {
+  display: block;
 }
 
 .actions.button-group {
   margin-bottom: 0;
+  white-space: nowrap;
+}
+
+.actions .button {
+  padding: .65em 0.8em;
 }
 
 .flick.fav {
@@ -33,4 +51,22 @@
   background-color: #ddd;
   color: #eee;
   cursor: not-allowed;
+}
+
+.op-header {
+    margin: 10px;
+    width: 20%;
+    
+}
+
+.op-details {
+  margin: 10px;
+  width: 30%;
+
+
+}
+
+body {
+  background-size: 100%;
+  background-repeat: no-repeat;
 }

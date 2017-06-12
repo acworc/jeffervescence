@@ -1,24 +1,39 @@
-const app = {
-  init(selectors) {
+class App {
+  constructor(selectors) {
     this.flicks = []
+    this.reports = []
+    console.log(this.reports)
     this.max = 0
     this.list = document
       .querySelector(selectors.listSelector)
     this.template = document
       .querySelector(selectors.templateSelector)
+      
+    
     document
       .querySelector(selectors.formSelector)
       .addEventListener('submit', this.addFlickViaForm.bind(this))
 
+    document
+      .querySelector(selectors.opSelector)
+      .addEventListener('submit', this.compileReport.bind(this))
+    
+    document
+      .querySelector(selectors.deleteSelector)
+      .addEventListener('submit', this.handleDelete.bind(this))
+    
+
     this.load()
-  },
+  }
 
   load() {
     // Get the JSON string out of localStorage
     const flicksJSON = localStorage.getItem('flicks')
+    const reportsJSON = localStorage.getItem('reports')
 
     // Turn that into an array
     const flicksArray = JSON.parse(flicksJSON)
+    const reportsArray = JSON.parse(reportsJSON)
 
     // Set this.flicks to that array
     if (flicksArray) {
@@ -26,17 +41,22 @@ const app = {
         .reverse()
         .map(this.addFlick.bind(this))
     }
-  },
+    if (reportsArray) {
+      reportsArray.reverse().map(this.compileReportStr.bind(this))
+    }
+  }
 
   addFlick(flick) {
     const listItem = this.renderListItem(flick)
     this.list
       .insertBefore(listItem, this.list.firstChild)
     
-    ++ this.max
+    if (flick.id > this.max) {
+      this.max = flick.id
+    }
     this.flicks.unshift(flick)
     this.save()
-  },
+  }
 
   addFlickViaForm(ev) {
     ev.preventDefault()
@@ -50,13 +70,14 @@ const app = {
     this.addFlick(flick)
 
     f.reset()
-  },
+  }
 
   save() {
     localStorage
       .setItem('flicks', JSON.stringify(this.flicks))
-
-  },
+    localStorage.setItem('reports', JSON.stringify(this.reports))
+    
+  }
 
   renderListItem(flick) {
     const item = this.template.cloneNode(true)
@@ -65,6 +86,9 @@ const app = {
     item
       .querySelector('.flick-name')
       .textContent = flick.name
+    item
+      .querySelector('.flick-name')
+      .setAttribute('title', flick.name)
 
     if (flick.fav) {
       item.classList.add('fav')
@@ -91,7 +115,7 @@ const app = {
       .addEventListener('click', this.edit.bind(this, flick))
 
     return item
-  },
+  }
 
   removeFlick(ev) {
     const listItem = ev.target.closest('.flick')
@@ -107,7 +131,7 @@ const app = {
 
     listItem.remove()
     this.save()
-  },
+  }
 
   favFlick(flick, ev) {
     console.log(ev.currentTarget)
@@ -121,7 +145,7 @@ const app = {
     }
     
     this.save()
-  },
+  }
 
   moveUp(flick, ev) {
     const listItem = ev.target.closest('.flick')
@@ -138,7 +162,7 @@ const app = {
       this.flicks[index] = previousFlick
       this.save()
     }
-  },
+  }
 
   moveDown(flick, ev) {
     const listItem = ev.target.closest('.flick')
@@ -155,7 +179,7 @@ const app = {
       this.flicks[index] =  nextFlick
       this.save()
     }
-  },
+  }
 
   edit(flick, ev) {
     const listItem = ev.target.closest('.flick')
@@ -181,17 +205,80 @@ const app = {
       icon.classList.add('fa-check')
       btn.classList.add('success')
     }
-  },
+  }
 
   saveOnEnter(flick, ev) {
     if (ev.key === 'Enter') {
       this.edit(flick, ev)
     }
   }
+
+  compileReport(ev) {
+    ev.preventDefault()
+    const f = ev.target
+    const operName = f.operName.value
+    const missionName = f.missionName.value
+    const missDate = f.missDate.value
+    const opDetails = document.querySelector('#reportContent').textContent
+    const compiledReport = "<b>Date of Report:</b> " + Date() + "<br/>" + "<b>Mission: </b>" + missionName + "<br/>" + "<b>Mission Time of Execution: </b>" + missDate + "<br/>" + "<b>Operative:</b> " + operName + "<br/>" + "<b>Mission Details: </b>" + opDetails
+    console.log(compiledReport)
+    var para = document.createElement("p");
+    para.innerHTML=(compiledReport)
+    // para.appendChild(node);
+
+    var element = document.getElementById("reportList");
+    element.appendChild(para);
+
+    this.reports.unshift(compiledReport)
+    console.log(this.reports)
+    this.save()
+  }
+
+  compileReportStr(report) {
+    var para = document.createElement("p");
+    para.innerHTML=(report)
+    // para.appendChild(node);
+
+    var element = document.getElementById("reportList");
+    element.appendChild(para);
+    this.reports.unshift(report)
+    console.log(this.reports)
+    this.save()
+  }
+
+  reloadReports(report) {
+    var para = document.createElement("p");
+    para.innerHTML=(report)
+    // para.appendChild(node);
+
+    var element = document.getElementById("reportList");
+    element.appendChild(para);
+    console.log(this.reports)
+
+  }
+
+  handleDelete(event) {
+    event.preventDefault()
+    const f = event.target
+    const indexDelete = document.querySelector('#deleteItem').value - 1
+    this.reports.splice(indexDelete, 1)
+    this.save()
+    console.log(this.reports)
+
+    var element = document.getElementById("reportList");
+    element.innerHTML = ""
+    for (let i = 0; i < this.reports.length; i++) {
+      this.reloadReports(this.reports[i])
+
+    }
+
+  }
 }
 
-app.init({
+const app = new App({
   formSelector: '#flick-form',
   listSelector: '#flick-list',
   templateSelector: '.flick.template',
+  opSelector: '#operationDetails',
+  deleteSelector: '#deleteForm',
 })
