@@ -79,6 +79,13 @@ const app = {
     item
       .querySelector('button.move-up')
       .addEventListener('click', this.moveUp.bind(this, flick))
+    item
+      .querySelector('button.move-down')
+      .addEventListener('click', this.moveDown.bind(this, flick))
+    item
+      .querySelector('button.edit')
+      .addEventListener('click', this.edit.bind(this, flick))
+
     return item
   },
 
@@ -126,6 +133,51 @@ const app = {
       this.flicks[index] = previousFlick
       this.save()
     }
+  },
+
+  moveDown(flick, ev) {
+    const listItem = ev.target.closest('.flick')
+
+    const index = this.flicks.findIndex((currentFlick, i) => {
+      return currentFlick.id === flick.id
+    })
+
+    if (index < this.flicks.length - 1) {
+      this.list.insertBefore(listItem.nextElementSibling, listItem)
+      
+      const nextFlick = this.flicks[index + 1]
+      this.flicks[index + 1] = flick
+      this.flicks[index] = nextFlick
+      this.save()
+    }
+
+  },
+
+  edit(flick, ev) {
+    const btn = ev.currentTarget
+    const listItem = btn.closest('.flick')
+    const nameField = listItem.querySelector('.flick-name')
+    const icon = btn.querySelector('i.fa')
+
+    if (nameField.isContentEditable) {
+      nameField.contentEditable = false;
+
+      icon.classList.remove('fa-check')
+      icon.classList.add('fa-pencil')
+      btn.classList.remove('success')
+
+      flick.name = nameField.textContent
+      this.save()
+
+
+    } else {
+      nameField.contentEditable = true
+      nameField.focus()
+      icon.classList.remove('fa-pencil')
+      icon.classList.add('fa-check')
+      btn.classList.add('success')
+    }
+
   }
 }
 
