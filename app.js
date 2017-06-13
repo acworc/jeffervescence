@@ -2,7 +2,7 @@ class App {
   constructor(selectors) {
     this.flicks = []
     this.reports = []
-    console.log(this.reports)
+    // console.log(this.reports)
     this.max = 0
     this.list = document
       .querySelector(selectors.listSelector)
@@ -42,7 +42,7 @@ class App {
         .map(this.addFlick.bind(this))
     }
     if (reportsArray) {
-      reportsArray.reverse().map(this.compileReportStr.bind(this))
+      reportsArray.map(this.compileReportStr.bind(this))
     }
   }
 
@@ -134,7 +134,7 @@ class App {
   }
 
   favFlick(flick, ev) {
-    console.log(ev.currentTarget)
+    // console.log(ev.currentTarget)
     const listItem = ev.target.closest('.flick')
     flick.fav = !flick.fav
 
@@ -221,7 +221,7 @@ class App {
     const missDate = f.missDate.value
     const opDetails = document.querySelector('#reportContent').textContent
     const compiledReport = "<b>Date of Report:</b> " + Date() + "<br/>" + "<b>Mission: </b>" + missionName + "<br/>" + "<b>Mission Time of Execution: </b>" + missDate + "<br/>" + "<b>Operative:</b> " + operName + "<br/>" + "<b>Mission Details: </b>" + opDetails
-    console.log(compiledReport)
+    // console.log(compiledReport)
     var para = document.createElement("p");
     para.innerHTML=(compiledReport)
     // para.appendChild(node);
@@ -229,8 +229,8 @@ class App {
     var element = document.getElementById("reportList");
     element.appendChild(para);
 
-    this.reports.unshift(compiledReport)
-    console.log(this.reports)
+    this.reports.push(compiledReport)
+    // console.log(this.reports)
     this.save()
   }
 
@@ -242,7 +242,7 @@ class App {
     var element = document.getElementById("reportList");
     element.appendChild(para);
     this.reports.unshift(report)
-    console.log(this.reports)
+    // console.log(this.reports)
     this.save()
   }
 
@@ -253,22 +253,24 @@ class App {
 
     var element = document.getElementById("reportList");
     element.appendChild(para);
-    console.log(this.reports)
+    // console.log(this.reports)
 
   }
 
   handleDelete(event) {
+    console.log(this.reports)
     event.preventDefault()
     const f = event.target
     const indexDelete = document.querySelector('#deleteItem').value - 1
     this.reports.splice(indexDelete, 1)
     this.save()
-    console.log(this.reports)
+
 
     var element = document.getElementById("reportList");
     element.innerHTML = ""
     for (let i = 0; i < this.reports.length; i++) {
       this.reloadReports(this.reports[i])
+      console.log(this.reports[i])
 
     }
 

@@ -127,7 +127,7 @@
       <form id="deleteForm">
         <div class="input-group">
           <label for="numberToDelete" style="width: 30%; padding: 10px;">Number to Delete (Admin Only)</label>
-          <input type="number" name="deleteItem" id="deleteItem"  placeholder="Item to Delete" style="margin: 10px; width: 8%; padding: 10px;">
+          <input type="number" name="deleteItem" id="deleteItem"  placeholder="Item to Delete" style="margin: 10px; width: 8%; padding: 10px;" min="1" required>
           <div class="secondary button" style="margin: 10px; width: 10%; padding: 10px;">
             <button type="submit" >Delete Item</button>
           </div>
@@ -140,6 +140,11 @@
         </div>
       </div>
 
+      <audio loop autoplay muted id="party">
+        <source src="cia.mp3" type="audio/mpeg">
+      Your browser does not support the audio element.
+      </audio>
+
 
 
     </div>
@@ -147,10 +152,13 @@
 function myFunction() {
     var x = document.getElementById('jeff');
     var y = document.getElementById('non-jeff')
-    var z =document.getElementById('theBody')
+    var z = document.getElementById('theBody')
+    var a = document.getElementById('party')
     if (x.style.display === 'none') {
         x.style.display = 'block';
         y.style.display = 'none';
+        a.muted = true;
+        a.pause();
         document.body.style.backgroundImage = "";
         document.body.style.backgroundColor = "white"
         var all = document.getElementsByTagName("*");
@@ -160,6 +168,8 @@ function myFunction() {
     } else {
         x.style.display = 'none';
         y.style.display = 'block';
+        a.muted = false;
+        a.play();
         document.body.style.backgroundColor = "black"
         document.body.style.backgroundImage = "url('http://img01.deviantart.net/070b/i/2010/204/3/2/cia_screensaver_by_qwerty_inc.png')";
         console.log(document.body.style.backgroundImage)
@@ -170,6 +180,8 @@ function myFunction() {
     }
 }
 </script>
+
+
 
 
     <script src="app.js"></script>
